@@ -1,0 +1,189 @@
+{
+    "info": {
+        "name": "Real-Time Support Desk",
+        "description": "Local auth, profile, ticket and chat APIs. Set the token collection variable after login.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        { "key": "baseUrl", "value": "http://localhost:8080" },
+        { "key": "token", "value": "" },
+        { "key": "ticketId", "value": "" },
+        { "key": "agentId", "value": "" }
+    ],
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "url": "{{baseUrl}}/api/auth/register",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"demo_user\",\n    \"email\": \"demo@example.com\",\n    \"password\": \"DemoPass123!\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "url": "{{baseUrl}}/api/auth/login",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"demo@example.com\",\n    \"password\": \"DemoPass123!\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        }
+                    }
+                },
+                {
+                    "name": "Current profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                        "url": "{{baseUrl}}/api/users/me"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Tickets",
+            "item": [
+                {
+                    "name": "List tickets",
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                        "url": "{{baseUrl}}/api/tickets?page=0&size=10"
+                    }
+                },
+                {
+                    "name": "Create ticket",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Authorization", "value": "Bearer {{token}}" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "url": "{{baseUrl}}/api/tickets",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Cannot sign in\",\n    \"description\": \"The login page rejects my credentials.\",\n    \"category\": \"Account\",\n    \"priority\": \"MEDIUM\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        }
+                    }
+                },
+                {
+                    "name": "Get one ticket",
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                        "url": "{{baseUrl}}/api/tickets/{{ticketId}}"
+                    }
+                },
+                {
+                    "name": "Update ticket status",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            { "key": "Authorization", "value": "Bearer {{token}}" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "url": "{{baseUrl}}/api/tickets/{{ticketId}}/status",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"IN_PROGRESS\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        }
+                    }
+                },
+                {
+                    "name": "Assign agent (admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Authorization", "value": "Bearer {{token}}" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "url": "{{baseUrl}}/api/tickets/{{ticketId}}/assign",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"agentId\": \"{{agentId}}\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Messages",
+            "item": [
+                {
+                    "name": "Get ticket messages",
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                        "url": "{{baseUrl}}/api/tickets/{{ticketId}}/messages"
+                    }
+                },
+                {
+                    "name": "Send message",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Authorization", "value": "Bearer {{token}}" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "url": "{{baseUrl}}/api/tickets/{{ticketId}}/messages",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"content\": \"I am looking into this issue.\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "List users",
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                        "url": "{{baseUrl}}/api/admin/users"
+                    }
+                },
+                {
+                    "name": "List support agents",
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                        "url": "{{baseUrl}}/api/admin/agents"
+                    }
+                },
+                {
+                    "name": "Change user role",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            { "key": "Authorization", "value": "Bearer {{token}}" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "url": "{{baseUrl}}/api/admin/users/{{agentId}}/role",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"role\": \"SUPPORT_AGENT\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
